@@ -31,6 +31,11 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
+
+  void getNext() {
+    current = WordPair.random();
+    notifyListeners();
+  }
 }
 
 // --------------------------
@@ -39,24 +44,67 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+    var pair = appState.current;
 
     return Scaffold(
-      body: Column(
-        children: [
+      body: Center(
+        child: Column(
+          // center texts/cards
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
 
-          Text('A random idea:'),
-          Text(appState.current.asLowerCase),
+            Text('A random idea:'),
+            //Text(appState.current.asLowerCase),
+            BigCard(pair: pair),
 
-          // Button
-          ElevatedButton(
-            onPressed: () {
-              print('button pressed!');
-            },
-            child: Text('Next'),
-          ),
+            // Button
+            ElevatedButton(
+              onPressed: () {
+                //print('button pressed!');
+                appState.getNext();
+              },
+              child: Text('Next'),
+            ),
 
-        ], // children
+          ], // children
+        ),
       ),
     );
   }
+} // end myhomepage
+
+// --------------------------
+
+class BigCard extends StatelessWidget {
+  const BigCard({
+    super.key,
+    required this.pair,
+  });
+
+  final WordPair pair;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    // change text apperance
+    final style = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+    );
+
+    return Card(
+      //color: theme.colorScheme.primary,
+      color: Colors.blue,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        //child: Text(pair.asLowerCase),
+        child: Text(
+            pair.asLowerCase,
+            style: style,
+            semanticsLabel: "${pair.first} ${pair.second}",
+        ), // added text change
+      ),
+    );
+  }
+
 } // end
