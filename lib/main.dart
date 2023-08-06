@@ -32,11 +32,24 @@ class MyApp extends StatelessWidget {
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
 
+  // Change word function, next button
   void getNext() {
     current = WordPair.random();
     notifyListeners();
   }
-}
+  var favorites = <WordPair>[];
+
+  // Add Favorite button function
+  void toggleFavorite() {
+    if (favorites.contains(current)) {
+      favorites.remove(current);
+    } else {
+      favorites.add(current);
+    }
+    notifyListeners();
+  }
+
+} // end myappstate
 
 // --------------------------
 
@@ -46,24 +59,52 @@ class MyHomePage extends StatelessWidget {
     var appState = context.watch<MyAppState>();
     var pair = appState.current;
 
+    IconData icon;
+    if (appState.favorites.contains(pair)) {
+      icon = Icons.favorite;
+    } else {
+      icon = Icons.favorite_border;
+    }
+
     return Scaffold(
       body: Center(
         child: Column(
           // center texts/cards
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
 
-            Text('A random idea:'),
+          children: [
+            //Text('A random idea:'),
             //Text(appState.current.asLowerCase),
+
+            // Text inside card
             BigCard(pair: pair),
+            SizedBox(height: 10),
 
             // Button
-            ElevatedButton(
-              onPressed: () {
-                //print('button pressed!');
-                appState.getNext();
-              },
-              child: Text('Next'),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+
+                // like button
+                ElevatedButton.icon(
+                  onPressed: () {
+                    appState.toggleFavorite();
+                  },
+                  icon: Icon(icon),
+                  label: Text('Like'),
+                ),
+                SizedBox(width: 10),
+
+                // next button
+                ElevatedButton(
+                  onPressed: () {
+                    //print('button pressed!');
+                    appState.getNext();
+                  },
+                  child: Text('Next'),
+                ),
+
+              ],
             ),
 
           ], // children
